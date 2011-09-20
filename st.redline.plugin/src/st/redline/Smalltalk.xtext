@@ -1,0 +1,35 @@
+grammar st.redline.Smalltalk with org.eclipse.xtext.common.Terminals
+
+generate smalltalk "http://www.redline.st/Smalltalk"
+
+
+
+Model:
+	class=Class;
+
+terminal ML_COMMENT:
+	'"' -> '"'
+;
+
+
+Class:
+	(
+		(classComment+=ML_COMMENT)?
+	parent=ID '<' '#'name=ID
+	)|
+	(parent=ID "subclass:" "#"name=ID
+		("instanceVariableNames:" instanceVariableNames=STRING)? 
+		("classVariableNames:" classVariableNames=STRING )? 
+		("poolDictionaries:" poolDictionaries=STRING )?
+		("category:" category=STRING )?
+	)
+	(methods+=Method)*
+	;
+	
+Method:
+	'-' methodName=ID (arguments+=Argument)*
+	(statement+=ID)*;
+
+Argument:
+	argumentName=ID ':'argumentValue=ID
+;

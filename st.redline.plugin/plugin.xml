@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package 
+       uri = "http://www.redline.st/Smalltalk" 
+       class = "st.redline.smalltalk.SmalltalkPackage"
+       genModel = "st/redline/Smalltalk.genmodel" /> 
+	
+  </extension>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Smalltalk Editor"
+            extensions="st"
+            icon="icons/balloon.jpg"
+            class="redlineplugin.editors.MultiPageEditor"
+            contributorClass="redlineplugin.editors.MultiPageEditorContributor"
+            id="redlineplugin.editors.MultiPageEditor">
+      </editor>
+   </extension>
+
+</plugin>
