@@ -1,0 +1,24 @@
+
+Redline Smalltalk is a Smalltalk for the Java Virtual Machine, because nothing is as
+productive as Smalltalk, and the App has to run on the Java Virtual Machine.
+
+The eclipse-redline-plugin aims to support
+- Java-Developers who need to work in an eclipse-environment but who want to step into new horizons by using the power of Smalltalk
+- Smalltalk-Developers who are familiar with Smalltalk-Environments but who need to dive into the Java-World
+- Developers who want use the best of both worlds and who want to bring the fun back to programming! 
+
+Redline Smalltalk is Copyright (c) James C. Ladd and released under the MIT License.
+
+eclipse-redline-plugin is Copyright (c) Stefan Krecher and released under the MIT License.
+See the LICENSE file for more information.
+
+For the latest information please see:
+
+    discussions https://groups.google.com/group/redline-smalltalk/topics
+    wiki        http://github.com/jamesladd/redline-smalltalk/wiki
+    blog        http://blog.redline.st
+    web         http://redline.st
+    twitter     http://twitter.com/#!/redline_st
+
+*end*
+
