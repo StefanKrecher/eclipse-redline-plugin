@@ -10,7 +10,15 @@ Model:
 terminal ML_COMMENT:
 	'"' -> '"'
 ;
-
+terminal ID : 
+  ('a'..'z'|'A'..'Z'|'_'|'0'..'9'|'+'|'-'|'*'|'%')*;
+//terminal ID : 
+//  ('^')?('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+terminal METHODNAME : 
+  ('a'..'z'|'A'..'Z'|'_'|'0'..'9'|'+'|'-'|'*'|'%')*;
+  
+terminal NUMBER : 
+  ('^')?('0'..'9')*;
 
 Class:
 	(
@@ -28,8 +36,40 @@ Class:
 	
 Method:
 	'-' methodName=ID (arguments+=Argument)*
-	(statement+=ID)*;
+	"|" temporaries+=Temporary* "|" 
+	assignments+=Assignment*
+	(statement+=Statement)*
+	return=Returnvalue
+;
 
 Argument:
 	argumentName=ID ':'argumentValue=ID
+;
+
+Temporary:
+	name=ID
+;
+
+Assignment:
+	assigne=ID ':=' value=[Temporary]
+;
+
+Statement: 
+	statement=(UnaryStatement|KeywordStatement)
+;
+
+UnaryStatement:
+	receiver=Receiver selector=ID"."	
+;
+
+KeywordStatement:
+	receiver=Receiver (arguments+=Argument)*"."
+;
+
+Receiver:
+	receiver=(ID|NUMBER)
+;
+
+Returnvalue:
+	"^"return?=(NUMBER|Statement|STRING)
 ;

@@ -128,10 +128,10 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 				int idx = _methodList.getSelectionIndex();
 				Method method = _methods.get(idx);
 				StringBuffer methodSource = new StringBuffer();
-				for(String statement : method.getStatement()) {
-					methodSource.append(statement);
-					methodSource.append("\n");
-				}
+//				for(String statement : method.getStatement()) {
+//					methodSource.append(statement);
+//					methodSource.append("\n");
+//				}
 				_methodSource.setText(methodSource.toString());
 			}
 			

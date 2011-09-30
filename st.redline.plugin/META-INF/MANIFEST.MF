@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: st.redline.plugin
 Bundle-Vendor: Stefan Krecher
-Bundle-Version: 1.0.0
+Bundle-Version: 0.0.1
 Bundle-SymbolicName: st.redline.plugin; singleton:=true
 Bundle-Activator: redlineplugin.Activator
 Bundle-ActivationPolicy: lazy
@@ -30,12 +30,18 @@ Import-Package: org.apache.log4j,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtext.xtend2.lib
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: st.redline,
+Export-Package: redlineplugin,
+ redlineplugin.editors,
+ redlineplugin.wizards,
+ st.redline,
+ st.redline.formatting,
+ st.redline.generator,
+ st.redline.parser.antlr,
+ st.redline.parser.antlr.internal;x-internal:=true,
+ st.redline.scoping,
+ st.redline.serializer,
  st.redline.services,
  st.redline.smalltalk,
  st.redline.smalltalk.impl,
  st.redline.smalltalk.util,
- st.redline.serializer,
- st.redline.parser.antlr,
- st.redline.parser.antlr.internal,
  st.redline.validation
