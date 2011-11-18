@@ -3,7 +3,12 @@
  */
 package st.redline.scoping;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
+
+import st.redline.smalltalk.impl.MethodImpl;
 
 /**
  * This class contains custom scoping description.
@@ -14,4 +19,16 @@ import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
  */
 public class SmalltalkScopeProvider extends AbstractDeclarativeScopeProvider {
 
+	@Override
+	public IScope getScope(EObject context, EReference reference) {
+		IScope scope = null;
+		if(context instanceof MethodImpl) {
+			scope = new MethodScope(context);
+			
+		} else {
+		scope = super.getScope(context, reference);
+		}
+		return scope;
+	}
+	
 }

@@ -62,12 +62,21 @@ UnaryStatement:
 	receiver=Receiver selector=ID"."	
 ;
 
+UnaryStatementWithTemporary:
+	receiver=ReceiverTemporary selector=ID"."	
+;
+
+
 KeywordStatement:
-	receiver=Receiver (arguments+=Argument)*"."
+	receiver=(ReceiverTemporary) (arguments+=Argument)*"."
 ;
 
 Receiver:
-	receiver=(ID|NUMBER)
+	receiver=(ID)
+;
+
+ReceiverTemporary:
+	receiver=[Temporary]
 ;
 
 Returnvalue:
