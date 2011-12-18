@@ -35,11 +35,11 @@ Class:
 	;
 	
 Method:
-	'-' methodName=ID (arguments+=Argument)*
-	"|" temporaries+=Temporary* "|" 
+	('-'|'+') methodName=ID (arguments+=Argument)*
+	("|" temporaries+=Temporary* "|")? 
 	assignments+=Assignment*
 	(statement+=Statement)*
-	return=Returnvalue
+	(return=Returnvalue|'<primitive:' primitive=ID '>')
 ;
 
 Argument:
