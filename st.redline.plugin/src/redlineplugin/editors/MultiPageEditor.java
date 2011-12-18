@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -35,13 +36,24 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.xtext.EcoreUtil2;
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
+import org.eclipse.xtext.parseTreeConstruction.XtextParsetreeConstructor;
+import org.eclipse.xtext.parsetree.reconstr.Serializer;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
+import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import st.redline.SmalltalkRuntimeModule;
 import st.redline.smalltalk.Method;
 import st.redline.smalltalk.impl.MethodImpl;
+
+import static org.eclipse.xtext.xtend2.lib.EObjectExtensions.*;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3
@@ -55,12 +67,13 @@ import st.redline.smalltalk.impl.MethodImpl;
 public class MultiPageEditor extends MultiPageEditorPart implements IResourceChangeListener {
 
 	/** The text editor used in page 0. */
-	private XtextEditor _editor; 
+	private XtextEditor _editor;
 
 	/** The font chosen in page 1. */
 	private Font _font;
 
 	/** The text widget used in page 2. */
+//	private StyledText _methodSource;
 	private StyledText _methodSource;
 	private List _methodList;
 
@@ -78,34 +91,44 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	 * Creates page 0 of the multi-page editor, which contains a text editor.
 	 */
 	void createSourceView() {
+		_editor = getXtextEditor();
+		int index = 0;
 		try {
-			IExtensionPoint ep = RegistryFactory.getRegistry().getExtensionPoint("org.eclipse.ui.editors");
-			IExtension[ ] extensions = ep.getExtensions();
-			IExtension iex = ep.getExtension("st.redline.Smalltalk");
-			IConfigurationElement confElem = null;
-			for(IExtension ex : extensions) {
-				for(IConfigurationElement ce : ex.getConfigurationElements()) {
-					if(ce.getAttribute("id").equals("st.redline.Smalltalk")) {
-						System.out.println("-- " + ce.getName() + " id=" + ce.getAttribute("id") + " class=" + ce.getAttribute("class"));
-						confElem = ce;
-						break;
-					}
-				}
-				if(confElem != null) {
+			index = addPage(_editor, getEditorInput());
+		} catch (PartInitException e) {
+			ErrorDialog.openError(getSite().getShell(), "Error creating nested text editor", null, e.getStatus());
+			e.printStackTrace();
+		}
+		setPageText(index, _editor.getTitle());
+	}
+
+	private XtextEditor getXtextEditor() {
+		XtextEditor xtextEditor = null;
+
+		IExtensionPoint ep = RegistryFactory.getRegistry().getExtensionPoint("org.eclipse.ui.editors");
+		IExtension[] extensions = ep.getExtensions();
+		IExtension iex = ep.getExtension("st.redline.Smalltalk");
+		IConfigurationElement confElem = null;
+		for (IExtension ex : extensions) {
+			for (IConfigurationElement ce : ex.getConfigurationElements()) {
+				if (ce.getAttribute("id").equals("st.redline.Smalltalk")) {
+					System.out.println("-- " + ce.getName() + " id=" + ce.getAttribute("id") + " class="
+							+ ce.getAttribute("class"));
+					confElem = ce;
 					break;
 				}
 			}
-			try {
-				// create the xtext editor
-				_editor = (XtextEditor) confElem.createExecutableExtension("class");
-			} catch (CoreException e1) {
-				e1.printStackTrace();
-			} 
-			int index = addPage(_editor, getEditorInput());
-			setPageText(index, _editor.getTitle());
-		} catch (PartInitException e) {
-			ErrorDialog.openError(getSite().getShell(), "Error creating nested text editor", null, e.getStatus());
+			if (confElem != null) {
+				break;
+			}
 		}
+		try {
+			// create the xtext editor
+			xtextEditor = (XtextEditor) confElem.createExecutableExtension("class");
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
+		return xtextEditor;
 	}
 
 	/**
@@ -115,26 +138,30 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 		Composite composite = new Composite(getContainer(), SWT.NONE);
 		FillLayout layout = new FillLayout(SWT.VERTICAL);
 		composite.setLayout(layout);
-		
+
 		_methodList = new List(composite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
-		
+
 		_methodSource = new StyledText(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.RESIZE);
-		_methodSource.setEditable(false);
+
+
 		
+
 		_methodList.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
 				int idx = _methodList.getSelectionIndex();
 				Method method = _methods.get(idx);
-				StringBuffer methodSource = new StringBuffer();
-//				for(String statement : method.getStatement()) {
-//					methodSource.append(statement);
-//					methodSource.append("\n");
-//				}
-				_methodSource.setText(methodSource.toString());
+
+				String editorText = _editor.getDocumentProvider().getDocument(_editor.getEditorInput()).get();
+
+				String[] methods = editorText.split("\n- ");
+
+				DefaultEObjectLabelProvider labelProvider = new DefaultEObjectLabelProvider();
+				Object source = labelProvider.text(method);
+				_methodSource.setText(methods[idx + 1]);
 			}
-			
+
 		});
 		int index = addPage(composite);
 		setPageText(index, getEditorInput().getName() + " Classview");
@@ -236,43 +263,39 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	 * Sets the font related data to be applied to the text in page 2.
 	 */
 	void setFont() {
-		FontDialog fontDialog = new FontDialog(getSite().getShell());
-		fontDialog.setFontList(_methodSource.getFont().getFontData());
-		FontData fontData = fontDialog.open();
-		if (fontData != null) {
-			if (_font != null)
-				_font.dispose();
-			_font = new Font(_methodSource.getDisplay(), fontData);
-			_methodSource.setFont(_font);
-		}
+//		FontDialog fontDialog = new FontDialog(getSite().getShell());
+//		fontDialog.setFontList(_methodSource.getFont().getFontData());
+//		FontData fontData = fontDialog.open();
+//		if (fontData != null) {
+//			if (_font != null)
+//				_font.dispose();
+//			_font = new Font(_methodSource.getDisplay(), fontData);
+//			_methodSource.setFont(_font);
+//		}
 	}
 
 	void analyseSource() {
-		
+
 		IXtextDocument myDocument = _editor.getDocument();
 
-		_methods = myDocument.readOnly(
-		new IUnitOfWork<java.util.List<Method>, XtextResource>(){
-		       public java.util.List<Method> exec(XtextResource resource) {
-		    	   java.util.List<Method> mymethods = new ArrayList<Method>();
-		    	   EList<EObject> contents = resource.getContents();
-		    	   for(EObject eo : contents.get(0).eContents().get(0).eContents()) {
-		    		   if(eo instanceof MethodImpl) {
-		    			   mymethods.add((Method) eo);
-		    		   }
-		    	   }
-		    	   return mymethods;
-		       }
-		 });
-		
-		
+		_methods = myDocument.readOnly(new IUnitOfWork<java.util.List<Method>, XtextResource>() {
+			public java.util.List<Method> exec(XtextResource resource) {
+				java.util.List<Method> mymethods = new ArrayList<Method>();
+				EList<EObject> contents = resource.getContents();
+				for (EObject eo : contents.get(0).eContents().get(0).eContents()) {
+					if (eo instanceof MethodImpl) {
+						mymethods.add((Method) eo);
+					}
+				}
+				return mymethods;
+			}
+		});
+
 		String editorText = _editor.getDocumentProvider().getDocument(_editor.getEditorInput()).get();
 
 		_methodList.removeAll();
-		for(Method m : _methods) {
+		for (Method m : _methods) {
 			_methodList.add(m.getMethodName());
 		}
-		
-		_methodSource.setText(editorText);
 	}
 }

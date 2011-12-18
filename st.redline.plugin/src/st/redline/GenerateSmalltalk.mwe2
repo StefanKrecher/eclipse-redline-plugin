@@ -3,6 +3,7 @@ module st.redline.GenerateSmalltalk
 import org.eclipse.emf.mwe.utils.*
 import org.eclipse.xtext.generator.*
 import org.eclipse.xtext.ui.generator.*
+import st.redline.ExtendedGenerator
 
 var grammarURI = "classpath:/st/redline/Smalltalk.xtext"
 var file.extensions = "st"
@@ -23,7 +24,7 @@ Workflow {
         directory = "${runtimeProject}.ui/src-gen"
     }
 
-    component = Generator {
+    component = ExtendedGenerator {
         pathRtProject = runtimeProject
         pathUiProject = "${runtimeProject}.ui"
         pathTestProject = "${runtimeProject}.tests"

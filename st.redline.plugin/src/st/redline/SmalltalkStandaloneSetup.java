@@ -1,6 +1,8 @@
 
 package st.redline;
 
+import com.google.inject.Injector;
+
 /**
  * Initialization support for running Xtext languages 
  * without equinox extension registry
@@ -8,7 +10,7 @@ package st.redline;
 public class SmalltalkStandaloneSetup extends SmalltalkStandaloneSetupGenerated{
 
 	public static void doSetup() {
-		new SmalltalkStandaloneSetup().createInjectorAndDoEMFRegistration();
+		Injector injector = new SmalltalkStandaloneSetup().createInjectorAndDoEMFRegistration();
 	}
 }
 

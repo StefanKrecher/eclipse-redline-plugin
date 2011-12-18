@@ -3,9 +3,21 @@
  */
 package st.redline;
 
+import org.eclipse.xtext.parseTreeConstruction.XtextParsetreeConstructor;
+import org.eclipse.xtext.parsetree.reconstr.IParseTreeConstructor;
+
+import st.redline.parser.antlr.SmalltalkParser;
+
+import com.google.inject.Binder;
+
 /**
- * Use this class to register components to be used at runtime / without the Equinox extension registry.
+ * Use this class to register components to be used at runtime / without the
+ * Equinox extension registry.
  */
 public class SmalltalkRuntimeModule extends st.redline.AbstractSmalltalkRuntimeModule {
-
+	@Override
+	public void configure(Binder binder) {
+		super.configure(binder);
+		binder.bind(IParseTreeConstructor.class).to(XtextParsetreeConstructor.class);
+	}
 }
