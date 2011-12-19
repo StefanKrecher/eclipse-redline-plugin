@@ -22,5 +22,35 @@
             id="redlineplugin.editors.MultiPageEditor">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="st.redline.launch.RedlineLauchConfiguration"
+            id="st.redline.plugin.launchConfigurationType1"
+            modes="run, debug"
+            name="Redline Launcher"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="st.redline.plugin.AbstractLaunchConfigurationTabGroup1"
+            id="st.redline.plugin.launchConfigurationTabGroup1"
+            type="st.redline.plugin.launchConfigurationType1">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="st.redline.plugin.LaunchShortcut2"
+            description="Blablabla"
+            icon="icons/balloon.jpg"
+            id="st.redline.plugin.shortcut2"
+            label="Redline"
+            modes="run, debug">
+         <contextualLaunch></contextualLaunch>
+      </shortcut>
+   </extension>
 
 </plugin>
